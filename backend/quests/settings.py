@@ -19,7 +19,7 @@ from dotenv import load_dotenv  # добавьте эту строку
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Загрузите переменные из .env файла
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR, '.env'))  # добавьте эту строку
 
 
 # Quick-start development settings - unsuitable for production
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'service',
     'quests',
     'order',
+    'information'
 ]
 
 MIDDLEWARE = [
@@ -69,7 +70,7 @@ ROOT_URLCONF = 'quests.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

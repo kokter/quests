@@ -4,8 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from service.serializers.service import ServiceSerializer
 from service.models import Service
+from service.serializers.service import ServiceSerializer
 
 
 @extend_schema(tags=['Service'])
