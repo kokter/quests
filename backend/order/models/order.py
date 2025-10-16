@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from information.models import Schedule
 from service.models import Addition, Service
 
+
 class Order(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, verbose_name="Услуга")
     additions = models.ManyToManyField(Addition, verbose_name="Дополнения", blank=True)
@@ -12,6 +13,8 @@ class Order(models.Model):
     name = models.CharField(max_length=120, verbose_name='Имя и Фамилия')
     email = models.EmailField(blank=True, verbose_name="Email")
     phone = models.CharField(max_length=20, verbose_name='Номер телефона')
+    comment = models.CharField(max_length=200, verbose_name="Комментарий пользователя")
+    admin_comment = models.CharField(max_length=150, verbose_name="Комментарий администратора")
 
     def calculate_total_cost(self):
         base_price = self.schedule.price if self.schedule else 0
@@ -26,6 +29,7 @@ class Order(models.Model):
         if self.total_cost != total:
             self.total_cost = total
             super().save(update_fields=["total_cost"])
+
 
 # сигнал для пересчета при изменении ManyToMany (additions)
 @receiver(m2m_changed, sender=Order.additions.through)

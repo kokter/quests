@@ -10,7 +10,7 @@ class Schedule(models.Model):
     price = models.IntegerField(verbose_name='Цена')
 
     def __str__(self):
-        return f'{self.date} - {self.time}, {self.schedule_base}'
+        return f'{self.date.strftime("%d-%m-%Y")} - {self.time}, {self.schedule_base}'
 
     class Meta:
         verbose_name = 'Расписание'
