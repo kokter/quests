@@ -14,7 +14,11 @@ class Order(models.Model):
     email = models.EmailField(blank=True, verbose_name="Email")
     phone = models.CharField(max_length=20, verbose_name='Номер телефона')
     comment = models.CharField(max_length=200, verbose_name="Комментарий пользователя")
-    admin_comment = models.CharField(max_length=150, verbose_name="Комментарий администратора")
+    admin_comment = models.CharField(max_length=150, verbose_name="Комментарий администратора", default="", blank=True)
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
 
     def calculate_total_cost(self):
         base_price = self.schedule.price if self.schedule else 0
@@ -31,6 +35,7 @@ class Order(models.Model):
             super().save(update_fields=["total_cost"])
 
 
+
 # сигнал для пересчета при изменении ManyToMany (additions)
 @receiver(m2m_changed, sender=Order.additions.through)
 def update_total_cost(sender, instance, action, **kwargs):
@@ -39,3 +44,4 @@ def update_total_cost(sender, instance, action, **kwargs):
         if instance.total_cost != total:
             instance.total_cost = total
             instance.save(update_fields=["total_cost"])
+

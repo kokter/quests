@@ -14,3 +14,7 @@ class CompletedOrders(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.service_name} ({self.schedule_datetime})"
+
+    class Meta:
+        verbose_name = "Завершенный заказ"
+        verbose_name_plural = "Завершенные заказы"
