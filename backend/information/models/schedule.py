@@ -8,6 +8,7 @@ class Schedule(models.Model):
     schedule_base = models.ForeignKey(ScheduleBase, on_delete=models.CASCADE, verbose_name='Шаблон расписания')
     time = models.TimeField(verbose_name='Время')
     price = models.IntegerField(verbose_name='Цена')
+    is_active = models.BooleanField(verbose_name= 'Доступно ли время?', default=True)
 
     def __str__(self):
         return f'{self.date.strftime("%d-%m-%Y")} - {self.time}, {self.schedule_base}'

@@ -1,0 +1,134 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+  {# НЕ показываем стандартную таблицу #}
+  <style>
+    div.results { display: none; }
+  </style>
+
+  <div class="grouped-schedules">
+    {% for base, date_groups in grouped_schedules %}
+      <div class="module grp collapse">
+        <h2 class="grp-header toggle-base">{{ base.service.name }}</h2>
+        <div class="date-groups" style="display: none;">
+          {% for date, slots in date_groups %}
+            <div class="module grp collapse">
+              <h3 class="grp-header toggle-date">{{ date }}</h3>
+              <div class="slots" style="display: none;">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Время</th>
+                      <th>Цена</th>
+                      <th>Доступно</th>
+                      <th>Действие</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for slot in slots %}
+                      <tr class="{% if not slot.is_active %}row-deleted{% endif %}">
+                        <td>
+                          <a href="{% url 'admin:information_schedule_change' slot.id %}">
+                            {{ slot.time }}
+                          </a>
+                        </td>
+                        <td>{{ slot.price }}</td>
+                        <td class="is-active-field">{{ slot.is_active }}</td>
+                        <td>
+                          <button class="toggle-active-btn button" data-id="{{ slot.id }}">
+                            {% if slot.is_active %}Вкл{% else %}Выкл{% endif %}
+                          </button>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Аккордеоны квестов
+      document.querySelectorAll(".toggle-base").forEach(function(baseHeader) {
+        baseHeader.addEventListener("click", function() {
+          const dateGroups = baseHeader.nextElementSibling;
+          dateGroups.style.display = (dateGroups.style.display === "none" || dateGroups.style.display === "") ? "block" : "none";
+        });
+      });
+
+      // Аккордеоны дат
+      document.querySelectorAll(".toggle-date").forEach(function(dateHeader) {
+        dateHeader.addEventListener("click", function() {
+          const slotsDiv = dateHeader.nextElementSibling;
+          slotsDiv.style.display = (slotsDiv.style.display === "none" || slotsDiv.style.display === "") ? "block" : "none";
+        });
+      });
+
+      // AJAX переключение is_active
+      document.querySelectorAll(".toggle-active-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          const scheduleId = btn.dataset.id;
+          fetch(`toggle_active/${scheduleId}/`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const td = btn.closest("tr").querySelector(".is-active-field");
+                td.textContent = data.new_status;
+                btn.textContent = data.new_status ? "Вкл" : "Выкл";
+
+                const row = btn.closest("tr");
+                if (!data.new_status) {
+                  row.classList.add("row-deleted");
+                } else {
+                  row.classList.remove("row-deleted");
+                }
+              }
+            });
+        });
+      });
+    });
+  </script>
+
+  <style>
+    /* Адаптивная подсветка недоступных слотов */
+    .row-deleted td {
+      background-color: #f44336; /* красный фон */
+      color: #fff; /* белый текст */
+    }
+
+    /* Кнопки переключения is_active */
+    .toggle-active-btn.button {
+      font-size: 12px;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+
+    /* Заголовки аккордеонов */
+    .grp-header {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Таблица слотов в стиле админки */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+
+    .admin-table th, .admin-table td {
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+    }
+
+    /* Аккордеоны с отступом */
+    .date-groups > .module {
+      margin-left: 15px;
+    }
+  </style>
+{% endblock %}

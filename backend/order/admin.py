@@ -15,6 +15,7 @@ class OrderAdmin(admin.ModelAdmin):
         "mark_as_completed_button",
         "add_to_corporate_button",
         "add_to_birthday_button",
+        "cancel_order_button",
     )
     readonly_fields = ("total_cost",)
 
@@ -24,8 +25,28 @@ class OrderAdmin(admin.ModelAdmin):
             path("ajax_complete/<int:order_id>/", self.admin_site.admin_view(self.ajax_complete_order), name="ajax_complete_order"),
             path("ajax_corporate/<int:order_id>/", self.admin_site.admin_view(self.ajax_add_to_corporate), name="ajax_add_corporate"),
             path("<int:order_id>/birthday/", self.admin_site.admin_view(self.add_to_birthday_form), name="add_to_birthday_form"),
+            path("ajax_cancel/<int:order_id>/", self.admin_site.admin_view(self.ajax_cancel_order), name="ajax_cancel_order"),
         ]
         return custom_urls + urls
+
+    # --- Новый обработчик отмены заказа ---
+    def ajax_cancel_order(self, request, order_id):
+        try:
+            order = get_object_or_404(Order, id=order_id)
+            order.delete()
+            return JsonResponse({"success": True, "message": f"Заказ {order_id} успешно отменён."})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+
+    # --- Кнопка "Отменить заказ" ---
+    def cancel_order_button(self, obj):
+        return format_html(
+            '''<button class="button cancel-btn" data-order-id="{}" data-url="{}" style="background:#ff4d4f;color:white;">
+               ❌ Отменить</button>''',
+            obj.id,
+            f"ajax_cancel/{obj.id}/"
+        )
+    cancel_order_button.short_description = "Отмена"
 
     # AJAX версии обработчиков
     def ajax_complete_order(self, request, order_id):
@@ -54,11 +75,11 @@ class OrderAdmin(admin.ModelAdmin):
     def ajax_add_to_corporate(self, request, order_id):
         try:
             order = get_object_or_404(Order, id=order_id)
-            exists = CorporateClient.objects.filter(name=order.name, phone=order.phone).exists()
+            exists = CorporateClient.objects.filter(name=order.name, phone=order.phone, date=order.date).exists()
             if exists:
                 return JsonResponse({"success": False, "message": f"Клиент {order.name} уже есть в корпоративных."})
             else:
-                CorporateClient.objects.create(name=order.name, phone=order.phone)
+                CorporateClient.objects.create(name=order.name, phone=order.phone, date=order.date)
                 return JsonResponse({"success": True, "message": f"Клиент {order.name} добавлен в корпоративные."})
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
@@ -120,7 +141,7 @@ class CompletedOrdersAdmin(admin.ModelAdmin):
 # ------------------- АДМИН КОРПОРАТИВНЫХ -------------------
 @admin.register(CorporateClient)
 class CorporateClientAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "phone")
+    list_display = ("id", "name", "phone", "date")
 
 # ------------------- АДМИН ДНЕЙ РОЖДЕНИЯ -------------------
 @admin.register(BirthdayClient)
