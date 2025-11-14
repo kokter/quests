@@ -6,14 +6,20 @@ from service.models import Addition, Service
 
 
 class Order(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Ожидает подтверждения'
+        CONFIRMED = 'confirmed', 'Подтверждён'
+        CANCELLED = 'cancelled', 'Отменён'
     service = models.ForeignKey(Service, on_delete=models.CASCADE, verbose_name="Услуга")
     additions = models.ManyToManyField(Addition, verbose_name="Дополнения", blank=True)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, verbose_name='Дата и время')
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, verbose_name='Статус')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     name = models.CharField(max_length=120, verbose_name='Имя и Фамилия')
     email = models.EmailField(blank=True, verbose_name="Email")
     phone = models.CharField(max_length=20, verbose_name='Номер телефона')
-    comment = models.CharField(max_length=200, verbose_name="Комментарий пользователя")
+    comment = models.CharField(max_length=200, verbose_name="Комментарий пользователя", blank=True, default="")
     admin_comment = models.CharField(max_length=150, verbose_name="Комментарий администратора", default="", blank=True)
 
     class Meta:

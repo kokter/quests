@@ -1,55 +1,57 @@
-from django.contrib import admin, messages
-from django.urls import path
-from django.shortcuts import redirect, render
 from datetime import timedelta
 
-from information.forms import MultiWeekScheduleGenerationForm
 from information.models import ScheduleBase, Schedule
 
 
-def generate_schedule(self, request):
-    if request.method == 'POST':
-        form = MultiWeekScheduleGenerationForm(request.POST)
-        if form.is_valid():
-            start_date = form.cleaned_data['start_date']
-            weeks_count = form.cleaned_data['weeks_count']
-            created_count = 0
-            updated_count = 0
+def generate_schedule_for_period(start_date, weeks_count=1):
+    """
+    Populate the Schedule table starting from start_date for the desired number of weeks.
 
-            schedule_bases = ScheduleBase.objects.all()
-            for week in range(weeks_count):
-                week_start = start_date + timedelta(weeks=week)
-                for base in schedule_bases:
-                    for day_number in base.days:
-                        day_offset = (day_number - 1)
-                        schedule_date = week_start + timedelta(days=day_offset)
+    Returns a tuple (created_count, updated_count).
+    """
+    if weeks_count < 1:
+        return 0, 0
 
-                        for time_field, price in zip(base.times, base.prices):
-                            schedule_obj, created = Schedule.objects.get_or_create(
-                                schedule_base=base,
-                                date=schedule_date,
-                                time=time_field,
-                                defaults={'price': price}
-                            )
-                            if created:
-                                created_count += 1
-                            else:
-                                if schedule_obj.price != price:
-                                    schedule_obj.price = price
-                                    schedule_obj.save(update_fields=['price'])
-                                    updated_count += 1
+    schedule_bases = ScheduleBase.objects.all()
+    created_count = 0
+    updated_count = 0
 
-            self.message_user(
-                request,
-                f"Генерация завершена: {created_count} новых слотов, {updated_count} обновлено.",
-                level=messages.SUCCESS
-            )
-            return redirect("..")
-    else:
-        form = MultiWeekScheduleGenerationForm()
+    for week_number in range(weeks_count):
+        week_start = start_date + timedelta(weeks=week_number)
+        for base in schedule_bases:
+            for day_number in base.days:
+                schedule_date = week_start + timedelta(days=day_number - 1)
+                for time_field, price in zip(base.times, base.prices):
+                    schedule_obj, created = Schedule.objects.get_or_create(
+                        schedule_base=base,
+                        date=schedule_date,
+                        time=time_field,
+                        defaults={'price': price}
+                    )
+                    if created:
+                        created_count += 1
+                    elif schedule_obj.price != price:
+                        schedule_obj.price = price
+                        schedule_obj.save(update_fields=['price'])
+                        updated_count += 1
 
-    context = dict(
-        self.admin_site.each_context(request),
-        form=form
-    )
-    return render(request, "admin/generate_schedule.html", context)
+    return created_count, updated_count
+
+
+def delete_week_schedule(week_start, days_in_week=7):
+    """
+    Remove every schedule slot that belongs to the week starting at week_start.
+    Returns the number of deleted Schedule rows.
+    """
+    if days_in_week < 1:
+        return 0
+
+    week_end = week_start + timedelta(days=days_in_week - 1)
+    deleted_count, _ = Schedule.objects.filter(
+        date__gte=week_start,
+        date__lte=week_end
+    ).delete()
+    return deleted_count
+
+
+__all__ = ["generate_schedule_for_period", "delete_week_schedule"]

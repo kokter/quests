@@ -1,0 +1,21 @@
+.bg-color {
+  background-color: rgb(2, 6, 22);
+}
+
+/* Глобальный фон страницы, чтобы не просвечивал белый цвет между секциями */
+html, body, #root {
+  background-color: rgb(2, 6, 22);
+}
+
+.button-color {
+  background-color: rgb(132, 27, 20);
+}
+
+.title-color-for-landing {
+  color: rgb(130, 127, 128);
+}
+
+.text-color-for-about-images {
+  color: #EBE3D8;
+}
+

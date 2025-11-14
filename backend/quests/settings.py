@@ -48,15 +48,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
     'drf_spectacular',
     'service',
     'quests',
     'order',
-    'information'
+    'information',
+    'contacts'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -154,3 +158,34 @@ SPECTACULAR_SETTINGS = {
 
 
 MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Разрешить все источники в режиме разработки
+
+# Автоматическая генерация расписания (APScheduler)
+AUTO_SCHEDULE_ENABLED = os.getenv("AUTO_SCHEDULE_ENABLED", "1") == "1"
+AUTO_SCHEDULE_CRON = {
+    "day_of_week": os.getenv("AUTO_SCHEDULE_DAY_OF_WEEK", "sun"),
+    "hour": int(os.getenv("AUTO_SCHEDULE_HOUR", 4)),
+    "minute": int(os.getenv("AUTO_SCHEDULE_MINUTE", 0)),
+}
+
+AUTO_SCHEDULE_CLEANUP_ENABLED = os.getenv("AUTO_SCHEDULE_CLEANUP_ENABLED", "1") == "1"
+AUTO_SCHEDULE_CLEANUP_CRON = {
+    "day_of_week": os.getenv("AUTO_SCHEDULE_CLEANUP_DAY_OF_WEEK", "*"),
+    "hour": int(os.getenv("AUTO_SCHEDULE_CLEANUP_HOUR", 3)),
+    "minute": int(os.getenv("AUTO_SCHEDULE_CLEANUP_MINUTE", 0)),
+}
+
+# Позволяет полностью отключить запуск фонового планировщика в InformationConfig
+INFORMATION_SCHEDULER_ENABLED = os.getenv("INFORMATION_SCHEDULER_ENABLED", "1") == "1"

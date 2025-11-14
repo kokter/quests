@@ -8,3 +8,8 @@ from information.serializers.actions import ActionsSerializer
 class ActionViewSet(ModelViewSet):
     serializer_class = ActionsSerializer
     queryset = Action.objects.all()
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context

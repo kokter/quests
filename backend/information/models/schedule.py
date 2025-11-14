@@ -9,6 +9,7 @@ class Schedule(models.Model):
     time = models.TimeField(verbose_name='Время')
     price = models.IntegerField(verbose_name='Цена')
     is_active = models.BooleanField(verbose_name= 'Доступно ли время?', default=True)
+    reserved_until = models.DateTimeField(null=True, blank=True, verbose_name='Зарезервировано до')
 
     def __str__(self):
         return f'{self.date.strftime("%d-%m-%Y")} - {self.time}, {self.schedule_base}'

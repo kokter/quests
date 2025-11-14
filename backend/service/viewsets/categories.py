@@ -6,10 +6,23 @@ from rest_framework.viewsets import ModelViewSet
 
 from service.models import Category
 from service.serializers.categories import CategorySerializer
+from service.serializers.categories import CategoryRetrieveSerializer
 
 
 @extend_schema(tags=['Category'])
 class CategoriesViewSet(ModelViewSet):
-    serializer_class = CategorySerializer
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(is_active=True)
+    
+    def get_queryset(self):
+        return Category.objects.filter(is_active=True)
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return CategoryRetrieveSerializer
+        return CategorySerializer
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 

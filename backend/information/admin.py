@@ -4,7 +4,6 @@ from .forms import MultiWeekScheduleGenerationForm
 from .models import ScheduleBase, Schedule
 from django.urls import path
 from django.contrib import messages
-from datetime import timedelta
 from django.contrib import admin
 from .models import Schedule
 from itertools import groupby
@@ -12,6 +11,7 @@ from operator import attrgetter
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from django.template.response import TemplateResponse
+from information.managment.commands.generate_schedule import generate_schedule_for_period
 
 # 1️⃣ Кастомный ModelAdmin для ScheduleBase с кнопкой генерации
 @admin.register(ScheduleBase)
@@ -37,29 +37,7 @@ class ScheduleBaseAdmin(admin.ModelAdmin):
                 start_date = form.cleaned_data['start_date']
                 weeks_count = form.cleaned_data['weeks_count']
 
-                created_count = 0
-                updated_count = 0
-                schedule_bases = ScheduleBase.objects.all()
-                for week in range(weeks_count):
-                    week_start = start_date + timedelta(weeks=week)
-                    for base in schedule_bases:
-                        for day_number in base.days:
-                            day_offset = (day_number - 1)
-                            schedule_date = week_start + timedelta(days=day_offset)
-                            for time_field, price in zip(base.times, base.prices):
-                                obj, created = Schedule.objects.get_or_create(
-                                    schedule_base=base,
-                                    date=schedule_date,
-                                    time=time_field,
-                                    defaults={'price': price}
-                                )
-                                if created:
-                                    created_count += 1
-                                else:
-                                    if obj.price != price:
-                                        obj.price = price
-                                        obj.save(update_fields=['price'])
-                                        updated_count += 1
+                created_count, updated_count = generate_schedule_for_period(start_date, weeks_count)
 
                 self.message_user(
                     request,

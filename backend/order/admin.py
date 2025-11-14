@@ -33,8 +33,19 @@ class OrderAdmin(admin.ModelAdmin):
     def ajax_cancel_order(self, request, order_id):
         try:
             order = get_object_or_404(Order, id=order_id)
+            # Обновляем статус заказа
+            order.status = Order.Status.CANCELLED
+            order.save(update_fields=["status"])
+
+            # Освобождаем слот, если был зарезервирован
+            if order.schedule:
+                schedule = order.schedule
+                schedule.reserved_until = None
+                schedule.is_active = True
+                schedule.save(update_fields=["reserved_until", "is_active"])
+
             order.delete()
-            return JsonResponse({"success": True, "message": f"Заказ {order_id} успешно отменён."})
+            return JsonResponse({"success": True, "message": f"Заказ {order_id} успешно отменён, время освобождено."})
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
 
@@ -52,6 +63,17 @@ class OrderAdmin(admin.ModelAdmin):
     def ajax_complete_order(self, request, order_id):
         try:
             order = get_object_or_404(Order, id=order_id)
+            # Фиксируем слот навсегда: убираем резерв и делаем недоступным
+            if order.schedule:
+                schedule = order.schedule
+                schedule.reserved_until = None
+                schedule.is_active = False
+                schedule.save(update_fields=["reserved_until", "is_active"])
+
+            # Статус
+            order.status = Order.Status.CONFIRMED
+            order.save(update_fields=["status"])
+
             service_name = order.service.name if order.service else "—"
             additions_names = ", ".join(a.name for a in order.additions.all())
             schedule_str = f"{order.schedule.date} {order.schedule.time}" if order.schedule else "—"
@@ -68,18 +90,19 @@ class OrderAdmin(admin.ModelAdmin):
                 admin_comment=order.admin_comment,
             )
             order.delete()
-            return JsonResponse({"success": True, "message": f"Заказ {order_id} перенесён в Завершённые."})
+            return JsonResponse({"success": True, "message": f"Заказ {order_id} подтверждён и перенесён в Завершённые. Время заблокировано."})
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
 
     def ajax_add_to_corporate(self, request, order_id):
         try:
             order = get_object_or_404(Order, id=order_id)
-            exists = CorporateClient.objects.filter(name=order.name, phone=order.phone, date=order.date).exists()
+            schedule_date = self._get_schedule_date_str(order)
+            exists = CorporateClient.objects.filter(name=order.name, phone=order.phone, date=schedule_date).exists()
             if exists:
                 return JsonResponse({"success": False, "message": f"Клиент {order.name} уже есть в корпоративных."})
             else:
-                CorporateClient.objects.create(name=order.name, phone=order.phone, date=order.date)
+                CorporateClient.objects.create(name=order.name, phone=order.phone, date=schedule_date)
                 return JsonResponse({"success": True, "message": f"Клиент {order.name} добавлен в корпоративные."})
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
@@ -132,6 +155,12 @@ class OrderAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('admin/js/order_actions.js',)
+
+    @staticmethod
+    def _get_schedule_date_str(order):
+        if order.schedule and order.schedule.date:
+            return order.schedule.date.strftime('%d.%m.%Y')
+        return ''
 
 # ------------------- АДМИН ЗАВЕРШЁННЫХ -------------------
 @admin.register(CompletedOrders)

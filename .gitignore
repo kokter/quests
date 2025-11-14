@@ -248,3 +248,8 @@ message_examples/
 /frontend/node_modules/
 /frontend/build
 /certbot/
+
+# Media storage
+images/
+backend/images/
+frontend/src/media/
