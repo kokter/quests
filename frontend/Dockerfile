@@ -7,9 +7,6 @@ RUN npm install
 
 COPY frontend /app
 
-ARG REACT_APP_PATH_URL_API=http://localhost:8000/api
-ENV REACT_APP_PATH_URL_API=${REACT_APP_PATH_URL_API}
-
 RUN npm run build
 
 FROM nginx:1.27-alpine
