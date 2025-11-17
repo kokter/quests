@@ -38,9 +38,6 @@ server {
         if ($is_frontend_request = 0) {
             return 403;
         }
-        if ($http_x_client_ip = "") {
-            return 400;
-        }
         proxy_pass http://backend:8000;
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Host $http_host;
