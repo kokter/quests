@@ -1,0 +1,91 @@
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  skip: yes
+
+run:
+  image: postgres:16
+  containerPort: 5432
+  persistenceMount: /var/lib/postgresql/data
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  skip: yes
+
+run:
+  image: redis:7
+  containerPort: 6379
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  dockerfile: backend/Dockerfile
+
+run:
+  containerPort: 8000
+  persistenceMount: /app/images
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  dockerfile: backend/Dockerfile
+
+run:
+  command: celery
+  args: -A quests worker -l INFO -P solo
+  persistenceMount: /app/images
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  dockerfile: backend/Dockerfile
+
+run:
+  command: celery
+  args: -A quests beat -l INFO
+  persistenceMount: /app/images
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  dockerfile: frontend/Dockerfile
+
+run:
+  containerPort: 80
+
+meta:
+  environment:
+    docker
+  toolchain:
+    name: docker
+
+build:
+  dockerfile: nginx/Dockerfile
+
+run:
+  containerPort: 80
