@@ -252,4 +252,3 @@ message_examples/
 # Media storage
 images/
 backend/images/
-frontend/src/media/
