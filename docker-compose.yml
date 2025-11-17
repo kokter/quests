@@ -22,7 +22,6 @@ services:
       POSTGRES_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend,nginx
     volumes:
       - ./images:/app/images
       - static_volume:/app/staticfiles
@@ -43,7 +42,6 @@ services:
       POSTGRES_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend,nginx
       COLLECT_STATIC: "0"
     command: celery -A quests worker -l INFO -P solo
     volumes:
@@ -63,7 +61,6 @@ services:
       POSTGRES_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend,nginx
       COLLECT_STATIC: "0"
     command: celery -A quests beat -l INFO
     volumes:
