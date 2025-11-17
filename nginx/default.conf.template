@@ -19,7 +19,7 @@ server {
         add_header Cache-Control "public";
     }
 
-    location /media/ {
+    location /images/ {
         alias /app/images/;
         add_header Cache-Control "public, max-age=86400";
     }
