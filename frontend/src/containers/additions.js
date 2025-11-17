@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { useIsMobile } from "../hooks/isMobile";
 import "../styles/colors.css";
 import { useOrder } from "../context/order-context";
-
-const API_BASE_URL = process.env.REACT_APP_PATH_URL_API || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../config";
 
 const AdditionCard = ({ item, selected, onToggle }) => {
   return (

@@ -1,9 +1,10 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from information.managment.commands.generate_schedule import generate_schedule_for_period
+from information.management.commands.generate_schedule import generate_schedule_for_period
 
 
 class Command(BaseCommand):
@@ -16,9 +17,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "--weeks-ahead",
             type=int,
-            default=2,
-            help="How many weeks ahead relative to the current week should be generated (default: 2).",
+            default=getattr(settings, "AUTO_SCHEDULE_WEEKS_AHEAD", 2),
+            help="How many weeks ahead relative to the current week should be generated "
+                 "(default: settings.AUTO_SCHEDULE_WEEKS_AHEAD).",
         )
+
     def handle(self, *args, **options):
         today = timezone.localdate()
         current_week_start = today - timedelta(days=today.weekday())

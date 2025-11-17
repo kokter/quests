@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -7,14 +8,15 @@ from information.models import Schedule
 
 
 class Command(BaseCommand):
-    help = "Удаляет записи расписания, дата которых раньше текущего дня."
+    help = "�?�?���>�?��' ��������?�� �?���?����?���?��?, �?���'�� ��?�'�?�?�<�: �?���?�?�?�� �'���?�%��?�? �?�?�?."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--keep-days",
             type=int,
-            default=0,
-            help="Сколько полных дней в прошлом сохранять. По умолчанию 0 (удаляем всё до сегодняшней даты).",
+            default=getattr(settings, "AUTO_SCHEDULE_KEEP_DAYS", 0),
+            help="����?�>�?��? ���?�>�?�<�: �?�?��� �? ���?�?�?�>�?�? �?�?�:�?���?�?�'�?. "
+                 "�?�? �?�?�?�>�ؐ��?��? settings.AUTO_SCHEDULE_KEEP_DAYS (��? �����?? 0).",
         )
 
     def handle(self, *args, **options):
@@ -27,6 +29,7 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Удалено {deleted_count} записей расписания старше {cutoff_date.isoformat()}."
+                f"�?�?���>��?�? {deleted_count} ��������?��� �?���?����?���?��? �?�'���?�?�� {cutoff_date.isoformat()}."
             )
         )
+

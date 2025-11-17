@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useIsMobile } from "../hooks/isMobile";
 import "../styles/colors.css";
-
-const API_BASE_URL = process.env.REACT_APP_PATH_URL_API || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../config";
 
 const Promotions = () => {
   const isMobile = useIsMobile();

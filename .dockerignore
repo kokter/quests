@@ -1,0 +1,11 @@
+.git
+.idea
+.vscode
+.venv
+**/__pycache__
+**/*.pyc
+frontend/node_modules
+backend/staticfiles
+images
+.env
+*.env

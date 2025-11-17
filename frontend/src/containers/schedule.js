@@ -4,8 +4,7 @@ import { useIsMobile } from "../hooks/isMobile";
 import "../styles/colors.css";
 import OrderModal from "./order-modal";
 import { useOrder } from "../context/order-context";
-
-const API_BASE_URL = process.env.REACT_APP_PATH_URL_API || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../config";
 
 // Безопасный парсинг дат форматов `YYYY-MM-DD` и `DD.MM.YYYY`
 function parseDate(value) {
@@ -114,9 +113,16 @@ const ServiceSchedule = () => {
         schedule: selectedSlot?.id,
         additions: selectedAdditions.map(a => a.id),
       };
+      const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+      if (payload.client_ip) {
+        headers["X-Client-IP"] = payload.client_ip;
+      }
       const resp = await fetch(`${API_BASE_URL}/order/orders/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers,
         body: JSON.stringify(body),
       });
       if (!resp.ok) {

@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { FiMenu, FiX, FiMapPin } from "react-icons/fi";
 import { useIsMobile } from "../hooks/isMobile";
 import logo from "../media/logo.jpg";
-
-const API_BASE_URL = process.env.REACT_APP_PATH_URL_API || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../config";
 
 const splitAddressIntoTwoLines = (address) => {
   if (!address) return [];

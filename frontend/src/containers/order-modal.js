@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useOrder } from "../context/order-context";
 import { useIsMobile } from "../hooks/isMobile";
 
@@ -30,6 +30,8 @@ const OrderModal = ({ open, onClose, slot, onSubmit }) => {
   const total = useMemo(() => basePrice + (additionsTotal || 0), [basePrice, additionsTotal]);
   const [phoneDigits, setPhoneDigits] = useState("");
   const phoneValue = useMemo(() => formatPhoneValue(phoneDigits), [phoneDigits]);
+  const phoneInputRef = useRef(null);
+  const [clientIp, setClientIp] = useState("");
 
   useEffect(() => {
     const onEsc = (e) => e.key === "Escape" && onClose?.();
@@ -52,6 +54,27 @@ const OrderModal = ({ open, onClose, slot, onSubmit }) => {
     }
   }, [open]);
 
+  useEffect(() => {
+    let aborted = false;
+    const fetchIp = async () => {
+      try {
+        const response = await fetch("https://api.ipify.org?format=json");
+        const data = await response.json();
+        if (!aborted) {
+          setClientIp(data?.ip || "");
+        }
+      } catch (_) {
+        if (!aborted) {
+          setClientIp("");
+        }
+      }
+    };
+    fetchIp();
+    return () => {
+      aborted = true;
+    };
+  }, []);
+
   if (!open) return null;
 
   const handleSubmit = (e) => {
@@ -59,13 +82,22 @@ const OrderModal = ({ open, onClose, slot, onSubmit }) => {
     if (e.currentTarget.reportValidity && !e.currentTarget.reportValidity()) {
       return;
     }
+    if (phoneDigits.length !== PHONE_DIGIT_LIMIT) {
+      phoneInputRef.current?.setCustomValidity("Введите номер полностью в формате +7 (XXX) XXX-XX-XX");
+      phoneInputRef.current?.reportValidity();
+      return;
+    }
     const form = new FormData(e.currentTarget);
     const payload = Object.fromEntries(form.entries());
     payload.phone = phoneDigits.length ? `+7${phoneDigits}` : "";
+    if (clientIp) {
+      payload.client_ip = clientIp;
+    }
     onSubmit?.(payload);
   };
 
   const onPhoneChange = (event) => {
+    phoneInputRef.current?.setCustomValidity("");
     setPhoneDigits(extractDigits(event.target.value));
   };
 
@@ -105,11 +137,11 @@ const OrderModal = ({ open, onClose, slot, onSubmit }) => {
               type="tel"
               inputMode="tel"
               autoComplete="tel"
-              pattern="\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}"
               required
               value={phoneValue}
               onChange={onPhoneChange}
               placeholder={PHONE_TEMPLATE}
+              ref={phoneInputRef}
               className="w-full bg-white/10 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-yellow-400"
             />
           </div>

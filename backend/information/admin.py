@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.apps import apps
-from .forms import MultiWeekScheduleGenerationForm
+from .forms import MultiWeekScheduleGenerationForm, ScheduleBaseAdminForm
 from .models import ScheduleBase, Schedule
 from django.urls import path
 from django.contrib import messages
@@ -11,11 +11,12 @@ from operator import attrgetter
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from django.template.response import TemplateResponse
-from information.managment.commands.generate_schedule import generate_schedule_for_period
+from information.management.commands.generate_schedule import generate_schedule_for_period
 
 # 1️⃣ Кастомный ModelAdmin для ScheduleBase с кнопкой генерации
 @admin.register(ScheduleBase)
 class ScheduleBaseAdmin(admin.ModelAdmin):
+    form = ScheduleBaseAdminForm
     list_display = ("service",)
     change_list_template = "admin/schedulebase_changelist.html"
 

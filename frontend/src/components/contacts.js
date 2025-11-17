@@ -5,8 +5,7 @@ import "../styles/colors.css";
 import telegramIcon from "../media/telegram.png";
 import vkIcon from "../media/vk.png";
 import whatsappIcon from "../media/whatsapp.png";
-
-const API_BASE_URL = process.env.REACT_APP_PATH_URL_API || "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "../config";
 
 // Функция для форматирования номера телефона
 const formatPhoneNumber = (phone) => {
