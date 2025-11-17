@@ -156,9 +156,6 @@ const OrderModal = ({ open, onClose, slot, onSubmit }) => {
 
           <button type="submit" className={`button-color text-white px-6 py-2 rounded-full ${isMobile ? "w-full" : ""}`}>Забронировать</button>
 
-          <div className={`text-center text-xs text-white/60 pt-2 ${isMobile ? "pb-4" : ""}`} style={isMobile ? {paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'} : {}}>
-            Соглашаюсь с условиями пользовательского соглашения
-          </div>
         </form>
       </div>
     </div>

@@ -1,3 +1,8 @@
+map $http_origin $is_frontend_request {
+    default 0;
+    ~${FRONT_ALLOWED_ORIGINS_REGEX} 1;
+}
+
 server {
     listen 80;
     server_name _;
@@ -30,7 +35,7 @@ server {
     }
 
     location /api/order/ {
-        if ($http_origin !~* "^https?://localhost(:3000)?$") {
+        if ($is_frontend_request = 0) {
             return 403;
         }
         if ($http_x_client_ip = "") {
@@ -46,6 +51,9 @@ server {
     }
 
     location / {
+        if ($is_frontend_request = 0) {
+            return 403;
+        }
         proxy_pass http://backend:8000;
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Host $http_host;
