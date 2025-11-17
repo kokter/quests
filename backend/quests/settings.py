@@ -1,4 +1,4 @@
-"""
+﻿"""
 
 Django settings for quests project.
 
@@ -18,9 +18,7 @@ from pathlib import Path
 
 import os
 
-from celery.schedules import crontab
-
-from dotenv import load_dotenv  # РґРѕР±Р°РІСЊС‚Рµ СЌС‚Сѓ СЃС‚СЂРѕРєСѓ
+from celery.schedules import crontab`r`nfrom corsheaders.defaults import default_headers`r`n`r`nfrom dotenv import load_dotenv  # Р Т‘Р С•Р В±Р В°Р Р†РЎРЉРЎвЂљР Вµ РЎРЊРЎвЂљРЎС“ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“
 
 def env_bool(name: str, default: bool = False) -> bool:
     value = os.getenv(name)
@@ -40,9 +38,9 @@ def env_list(name: str, default: str = "") -> list[str]:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Р—Р°РіСЂСѓР·РёС‚Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ РёР· .env С„Р°Р№Р»Р°
+# Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С‘РЎвЂљР Вµ Р С—Р ВµРЎР‚Р ВµР СР ВµР Р…Р Р…РЎвЂ№Р Вµ Р С‘Р В· .env РЎвЂћР В°Р в„–Р В»Р В°
 
-load_dotenv(os.path.join(BASE_DIR, '.env'))  # РґРѕР±Р°РІСЊС‚Рµ СЌС‚Сѓ СЃС‚СЂРѕРєСѓ
+load_dotenv(os.path.join(BASE_DIR, '.env'))  # Р Т‘Р С•Р В±Р В°Р Р†РЎРЉРЎвЂљР Вµ РЎРЊРЎвЂљРЎС“ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“
 
 # Quick-start development settings - unsuitable for production
 
@@ -232,7 +230,7 @@ STATIC_URL = os.getenv("DJANGO_STATIC_URL", '/static/')
 
 STATICFILES_DIRS = [
 
-    os.path.join(BASE_DIR, 'static'),  # РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓРµС‚Рµ РѕР±С‰СѓСЋ РїР°РїРєСѓ static
+    os.path.join(BASE_DIR, 'static'),  # Р ВµРЎРѓР В»Р С‘ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµРЎвЂљР Вµ Р С•Р В±РЎвЂ°РЎС“РЎР‹ Р С—Р В°Р С—Р С”РЎС“ static
 
 ]
 
@@ -269,7 +267,9 @@ CORS_ALLOW_CREDENTIALS = env_bool("CORS_ALLOW_CREDENTIALS", True)
 
 CORS_ALLOW_ALL_ORIGINS = env_bool(
     "CORS_ALLOW_ALL_ORIGINS", DEBUG
-)  # Разрешить все источники в режиме разработки
+)  # Р Р°Р·СЂРµС€РёС‚СЊ РІСЃРµ РёСЃС‚РѕС‡РЅРёРєРё РІ СЂРµР¶РёРјРµ СЂР°Р·СЂР°Р±РѕС‚РєРё
+CORS_ALLOW_HEADERS = list(default_headers) + ['X-Client-IP']
+
 
 CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
@@ -319,7 +319,7 @@ CELERY_TASK_DEFAULT_QUEUE = os.getenv("CELERY_DEFAULT_QUEUE", "default")
 
 CELERY_TASK_TRACK_STARTED = True
 
-CELERY_TASK_TIME_LIMIT = int(os.getenv("CELERY_TASK_TIME_LIMIT", 60 * 30))  # 30 минут по умолчанию
+CELERY_TASK_TIME_LIMIT = int(os.getenv("CELERY_TASK_TIME_LIMIT", 60 * 30))  # 30 РјРёРЅСѓС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
 CELERY_BEAT_SCHEDULE = {}
 
@@ -346,4 +346,6 @@ if AUTO_SCHEDULE_CLEANUP_ENABLED:
         "options": {"expires": 60 * 60},
 
     }
+
+
 
