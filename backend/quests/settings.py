@@ -18,7 +18,10 @@ from pathlib import Path
 
 import os
 
-from celery.schedules import crontab`r`nfrom corsheaders.defaults import default_headers`r`n`r`nfrom dotenv import load_dotenv  # Р Т‘Р С•Р В±Р В°Р Р†РЎРЉРЎвЂљР Вµ РЎРЊРЎвЂљРЎС“ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“
+from celery.schedules import crontab
+from corsheaders.defaults import default_headers
+
+from dotenv import load_dotenv  # Р Т‘Р С•Р В±Р В°Р Р†РЎРЉРЎвЂљР Вµ РЎРЊРЎвЂљРЎС“ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“
 
 def env_bool(name: str, default: bool = False) -> bool:
     value = os.getenv(name)
@@ -346,6 +349,10 @@ if AUTO_SCHEDULE_CLEANUP_ENABLED:
         "options": {"expires": 60 * 60},
 
     }
+
+
+
+
 
 
 
