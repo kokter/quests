@@ -6,6 +6,7 @@ services:
       - backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups:rw
 
   redis:
     image: redis:7
@@ -96,6 +97,44 @@ services:
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - static_volume:/app/staticfiles:ro
       - ./images:/app/images:ro
+
+  db-backup:
+    image: postgres:16
+    profiles:
+      - tools
+    env_file:
+      - backend/.env
+    depends_on:
+      - db
+    volumes:
+      - ./backups:/backups
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        timestamp=$$(date +%Y%m%d_%H%M%S)
+        echo "Writing dump to /backups/backup_$$timestamp.dump"
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h db -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB -Fc -f /backups/backup_$$timestamp.dump
+
+  db-restore:
+    image: postgres:16
+    profiles:
+      - tools
+    env_file:
+      - backend/.env
+    depends_on:
+      - db
+    volumes:
+      - ./backups:/backups
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        : "$${BACKUP_FILE:?Set BACKUP_FILE to the dump you want to restore (e.g. /backups/backup_20250101_120000.dump)}"
+        echo "Restoring $$BACKUP_FILE into $$POSTGRES_DB"
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_restore --clean --if-exists -h db -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB "$$BACKUP_FILE"
 
 volumes:
   postgres_data:

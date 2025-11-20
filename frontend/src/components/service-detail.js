@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "../styles/colors.css";
 import { useIsMobile } from "../hooks/isMobile";
 import { useParams } from "react-router-dom";
-import serviceLogo from "../media/service_logo.svg";
+import serviceLogo from "../media/service_logo.png";
 import { API_BASE_URL } from "../config";
 
 const ServiceDetail = () => {
@@ -227,7 +227,7 @@ const ServiceDetail = () => {
               <img
                 src={serviceLogo}
                 alt="Service logo"
-                className="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 object-contain"
+                className="text-red-500 w-12 h-12 md:w-16 md:h-16 flex-shrink-0 object-contain"
               />
               <div className="flex flex-col gap-3 flex-1">
                 {service.minimal_age != null && service.minimal_age >= 0 && (

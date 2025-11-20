@@ -7,45 +7,44 @@ import vkIcon from "../media/vk.png";
 import whatsappIcon from "../media/whatsapp.png";
 import { API_BASE_URL } from "../config";
 
-// Функция для форматирования номера телефона
 const formatPhoneNumber = (phone) => {
-  if (!phone) return '';
-  
-  // Убираем все нецифровые символы, кроме +
-  let cleaned = phone.replace(/[^\d+]/g, '');
-  
-  // Если номер начинается с +7, заменяем на 8
-  if (cleaned.startsWith('+7')) {
-    cleaned = '8' + cleaned.substring(2);
+  if (!phone) return "";
+
+  let digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    digits = "7" + digits;
   }
-  
-  // Форматируем: 8-920-346-04-70
-  if (cleaned.length === 11 && cleaned.startsWith('8')) {
-    return `${cleaned[0]}-${cleaned.substring(1, 4)}-${cleaned.substring(4, 7)}-${cleaned.substring(7, 9)}-${cleaned.substring(9)}`;
+
+  if (digits.length === 11 && digits.startsWith("8")) {
+    digits = "7" + digits.substring(1);
   }
-  
-  // Если формат не подходит, возвращаем как есть
+
+  if (digits.length === 11 && digits.startsWith("7")) {
+    return `+7 ${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9)}`;
+  }
+
   return phone;
 };
 
-// Функция для получения номера телефона для tel: ссылки
 const getTelLink = (phone) => {
-  if (!phone) return '';
-  
-  // Убираем все нецифровые символы
-  let cleaned = phone.replace(/[^\d+]/g, '');
-  
-  // Если номер начинается с +7, оставляем как есть
-  if (cleaned.startsWith('+7')) {
-    return cleaned;
+  if (!phone) return "";
+
+  let digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    digits = "7" + digits;
   }
-  
-  // Если номер начинается с 8, заменяем на +7
-  if (cleaned.startsWith('8') && cleaned.length === 11) {
-    return '+7' + cleaned.substring(1);
+
+  if (digits.length === 11 && digits.startsWith("8")) {
+    digits = "7" + digits.substring(1);
   }
-  
-  return cleaned;
+
+  if (digits.length === 11 && digits.startsWith("7")) {
+    return `+7${digits.substring(1)}`;
+  }
+
+  return digits ? `+${digits}` : "";
 };
 
 const Contacts = () => {
@@ -59,11 +58,11 @@ const Contacts = () => {
         setLoading(true);
         const response = await fetch(`${API_BASE_URL}/contacts/contact/`, {
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setContactData(data);
@@ -98,16 +97,20 @@ const Contacts = () => {
     <section id="contacts" className="bg-color text-white w-full py-12 md:py-16 lg:py-20">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         {/* Заголовок */}
-        <h2 className={`font-orelega font-normal text-center leading-[100%] mb-8 md:mb-12 ${
-          isMobile ? 'text-[50px]' : 'text-[100px]'
-        }`}>
+        <h2
+          className={`font-orelega font-normal text-center leading-[100%] mb-8 md:mb-12 ${
+            isMobile ? "text-[50px]" : "text-[100px]"
+          }`}
+        >
           Контакты
         </h2>
 
         {/* Вводный текст */}
-        <p className={`font-orienta font-normal text-center leading-[100%] mb-12 md:mb-16 ${
-          isMobile ? 'text-[20px]' : 'text-[40px]'
-        }`}>
+        <p
+          className={`font-orienta font-normal text-center leading-[100%] mb-12 md:mb-16 ${
+            isMobile ? "text-[20px]" : "text-[40px]"
+          }`}
+        >
           Хотите забронировать игру или задать вопрос? Мы всегда на связи!
         </p>
 
@@ -117,15 +120,19 @@ const Contacts = () => {
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center gap-3 mb-3">
               <FiMapPin className="text-red-500 text-2xl md:text-3xl flex-shrink-0" />
-              <span className={`font-orienta font-normal leading-[100%] ${
-                isMobile ? 'text-[18px]' : 'text-[28px]'
-              }`}>
+              <span
+                className={`font-orienta font-normal leading-[100%] ${
+                  isMobile ? "text-[18px]" : "text-[28px]"
+                }`}
+              >
                 Адрес:
               </span>
             </div>
-            <p className={`font-orienta font-normal leading-[100%] ${
-              isMobile ? 'text-[16px]' : 'text-[24px]'
-            }`}>
+            <p
+              className={`font-orienta font-normal leading-[100%] ${
+                isMobile ? "text-[16px]" : "text-[24px]"
+              }`}
+            >
               {contactData.address}
             </p>
           </div>
@@ -134,9 +141,11 @@ const Contacts = () => {
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center gap-3 mb-3">
               <FiPhone className="text-gray-400 text-2xl md:text-3xl flex-shrink-0" />
-              <span className={`font-orienta font-normal leading-[100%] ${
-                isMobile ? 'text-[18px]' : 'text-[28px]'
-              }`}>
+              <span
+                className={`font-orienta font-normal leading-[100%] ${
+                  isMobile ? "text-[18px]" : "text-[28px]"
+                }`}
+              >
                 Телефон для бронирования:
               </span>
             </div>
@@ -158,9 +167,11 @@ const Contacts = () => {
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center gap-3 mb-6">
               <FiGlobe className="text-gray-400 text-2xl md:text-3xl flex-shrink-0" />
-              <span className={`font-orienta font-normal leading-[100%] ${
-                isMobile ? 'text-[18px]' : 'text-[28px]'
-              }`}>
+              <span
+                className={`font-orienta font-normal leading-[100%] ${
+                  isMobile ? "text-[18px]" : "text-[28px]"
+                }`}
+              >
                 Социальные сети:
               </span>
             </div>
@@ -173,11 +184,7 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="Telegram"
                 >
-                  <img
-                    src={telegramIcon}
-                    alt="Telegram"
-                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
-                  />
+                  <img src={telegramIcon} alt="Telegram" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 </a>
               )}
               {contactData.vk_link && (
@@ -188,11 +195,7 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="VK"
                 >
-                  <img
-                    src={vkIcon}
-                    alt="VK"
-                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
-                  />
+                  <img src={vkIcon} alt="VK" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 </a>
               )}
               {contactData.whatsapp_link && (
@@ -203,11 +206,7 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="WhatsApp"
                 >
-                  <img
-                    src={whatsappIcon}
-                    alt="WhatsApp"
-                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
-                  />
+                  <img src={whatsappIcon} alt="WhatsApp" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
                 </a>
               )}
             </div>
@@ -219,4 +218,3 @@ const Contacts = () => {
 };
 
 export default Contacts;
-

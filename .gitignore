@@ -249,6 +249,9 @@ message_examples/
 /frontend/build
 /certbot/
 
+# Backups
+backups/
+
 # Media storage
 images/
 backend/images/
