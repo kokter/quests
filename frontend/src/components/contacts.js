@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { FiMapPin, FiPhone, FiGlobe } from "react-icons/fi";
+import { SiTelegram, SiVk, SiWhatsapp } from "react-icons/si";
 import { useIsMobile } from "../hooks/isMobile";
 import "../styles/colors.css";
-import telegramIcon from "../media/telegram.png";
-import vkIcon from "../media/vk.png";
-import whatsappIcon from "../media/whatsapp.png";
 import { API_BASE_URL } from "../config";
 
 const formatPhoneNumber = (phone) => {
@@ -49,6 +47,7 @@ const getTelLink = (phone) => {
 
 const Contacts = () => {
   const isMobile = useIsMobile();
+  const iconSize = isMobile ? 48 : 64;
   const [contactData, setContactData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -184,7 +183,12 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="Telegram"
                 >
-                  <img src={telegramIcon} alt="Telegram" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+                  <SiTelegram
+                    size={iconSize}
+                    className="text-[#229ED9]"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
                 </a>
               )}
               {contactData.vk_link && (
@@ -195,7 +199,12 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="VK"
                 >
-                  <img src={vkIcon} alt="VK" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+                  <SiVk
+                    size={iconSize}
+                    className="text-[#2787F5]"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
                 </a>
               )}
               {contactData.whatsapp_link && (
@@ -206,7 +215,12 @@ const Contacts = () => {
                   className="transition-transform hover:scale-110"
                   aria-label="WhatsApp"
                 >
-                  <img src={whatsappIcon} alt="WhatsApp" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+                  <SiWhatsapp
+                    size={iconSize}
+                    className="text-[#25D366]"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
                 </a>
               )}
             </div>
