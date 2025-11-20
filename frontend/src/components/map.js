@@ -64,7 +64,7 @@ const Map = () => {
   }, []);
 
   return (
-    <section className="bg-color text-white w-full pt-8 pb-[901px]">
+    <section className="bg-color text-white w-full pt-8 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex justify-center">
         <div className="h-[400px] overflow-hidden" style={{ width: '500px', maxWidth: '100%' }}>
           <div 
